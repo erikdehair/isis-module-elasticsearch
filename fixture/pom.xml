@@ -52,7 +52,7 @@ Copyright 2014~2015 Dan Haywood
         <dependency>
             <groupId>org.isisaddons.module.elasticsearch</groupId>
             <artifactId>isis-module-elasticsearch-dom</artifactId>
-            <version>1.13.0-SNAPSHOT</version>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
