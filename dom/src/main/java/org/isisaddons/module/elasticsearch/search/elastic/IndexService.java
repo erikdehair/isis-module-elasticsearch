@@ -290,6 +290,7 @@ public class IndexService {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("An error occurred while initialising search engine.\n\n", e);
+            
         }
     }
 
