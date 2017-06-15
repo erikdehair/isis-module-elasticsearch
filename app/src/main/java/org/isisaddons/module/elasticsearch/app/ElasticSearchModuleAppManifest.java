@@ -18,6 +18,7 @@
  */
 package org.isisaddons.module.elasticsearch.app;
 
+import com.google.common.collect.Lists;
 import org.apache.isis.applib.AppManifest;
 import org.apache.isis.applib.fixturescripts.FixtureScript;
 import org.isisaddons.module.elasticsearch.ElasticSearchModule;
@@ -50,7 +51,9 @@ public class ElasticSearchModuleAppManifest implements AppManifest {
      */
     @Override
     public List<Class<?>> getAdditionalServices() {
-        return Collections.emptyList();
+        return Lists.newArrayList(
+                org.isisaddons.module.elasticsearch.search.SearchService.class,
+                org.isisaddons.module.elasticsearch.search.elastic.ElasticSearchSubscriber.class);
     }
 
     /**

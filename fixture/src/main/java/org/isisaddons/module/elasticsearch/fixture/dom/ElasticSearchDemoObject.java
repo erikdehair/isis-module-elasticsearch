@@ -16,9 +16,9 @@
  */
 package org.isisaddons.module.elasticsearch.fixture.dom;
 
+import com.google.common.collect.ComparisonChain;
 import org.apache.isis.applib.DomainObjectContainer;
 import org.apache.isis.applib.annotation.*;
-import org.apache.isis.applib.util.ObjectContracts;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.VersionStrategy;
@@ -62,7 +62,9 @@ public class ElasticSearchDemoObject implements Comparable<ElasticSearchDemoObje
 
     @Override
     public int compareTo(ElasticSearchDemoObject other) {
-        return ObjectContracts.compare(this, other, "name");
+        return ComparisonChain.start()
+                .compare(getName(), other.getName())
+                .result();
     }
 
     //endregion
