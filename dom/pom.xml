@@ -55,7 +55,7 @@ Copyright 2014~2015 Dan Haywood
 
         <isis.version>1.14.0</isis.version>
         <assertj-core.version>2.0.0</assertj-core.version>
-	<lombok.version>1.16.16</lombok.version>
+	    <lombok.version>1.16.16</lombok.version>
         <elasticsearch.version>5.4.1</elasticsearch.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -259,6 +259,10 @@ Copyright 2014~2015 Dan Haywood
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.8.2</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
         </dependency>
     </dependencies>
 

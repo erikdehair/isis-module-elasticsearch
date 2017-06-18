@@ -17,9 +17,14 @@
 package org.isisaddons.module.elasticsearch.fixture.dom;
 
 import com.google.common.collect.ComparisonChain;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.isis.applib.DomainObjectContainer;
 import org.apache.isis.applib.annotation.*;
+import org.apache.isis.applib.services.bookmark.BookmarkService2;
+import org.isisaddons.module.elasticsearch.search.elastic.indexing.Indexable;
 
+import javax.inject.Inject;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.VersionStrategy;
 
@@ -38,24 +43,38 @@ import javax.jdo.annotations.VersionStrategy;
 @DomainObjectLayout(
         bookmarking = BookmarkPolicy.AS_ROOT
 )
-public class ElasticSearchDemoObject implements Comparable<ElasticSearchDemoObject> {
+public class ElasticSearchDemoObject implements Comparable<ElasticSearchDemoObject>, Indexable {
 
     //region > name (property)
-    
-    private String name;
-
     @javax.jdo.annotations.Column(allowsNull="false")
     @Title(sequence="1")
-    @MemberOrder(sequence="1")
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
+    @Getter @Setter
+    private String name;
     //endregion
+
+    @javax.jdo.annotations.Column(allowsNull="true")
+    @Getter @Setter
+    private String description;
+
+    @Override
+    public String getIndexId() {
+        return bookmarkService2.bookmarkFor(this).getIdentifier();
+    }
+
+    @Override
+    public String getTenancy() {
+        return "foo";
+    }
+
+    @Override
+    public String getSearchResultSummary() {
+        return "This is the summary of "+ getName() + " with description "+ getDescription();
+    }
+
+    @Override
+    public boolean isIndexable() {
+        return true;
+    }
 
 
     //region > compareTo
@@ -75,6 +94,8 @@ public class ElasticSearchDemoObject implements Comparable<ElasticSearchDemoObje
     @SuppressWarnings("unused")
     private DomainObjectContainer container;
 
+    @Inject
+    private BookmarkService2 bookmarkService2;
     //endregion
 
 }

@@ -1,4 +1,4 @@
-package org.isisaddons.module.elasticsearch.search.elastic;
+package org.isisaddons.module.elasticsearch.search.elastic.indexing;
 
 import org.apache.isis.applib.annotation.*;
 import org.apache.isis.applib.services.bookmark.Bookmark;
@@ -13,8 +13,8 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.isisaddons.module.elasticsearch.search.SearchService;
-import org.isisaddons.module.elasticsearch.search.elastic.indexer.Indexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,7 +106,7 @@ public class IndexService {
 
             Bookmark bookmark = bookmarkServiceDefault.bookmarkFor(indexableClazz, "i_" + id);
 
-            Indexable object = (Indexable) bookmarkServiceDefault.lookup(bookmark);
+            Indexable object = (Indexable) bookmarkServiceDefault.lookup(bookmark, BookmarkService2.FieldResetPolicy.DONT_RESET);
 
             if (object != null && object.isIndexable()) {
                 //updateIndexRelated(object);
@@ -189,11 +189,11 @@ public class IndexService {
         //json = StringUtils.stripAccents(json);
         IndexRequest indexRequest = new IndexRequest(SearchService.ELASTIC_SEARCH_INDEX_NAME, index.getType().name(),
                 updatedObject.getIndexId())
-                .source(json);
+                .source(json, XContentType.JSON);
 
         UpdateRequest updateRequest = new UpdateRequest(SearchService.ELASTIC_SEARCH_INDEX_NAME, index.getType().name(),
                 updatedObject.getIndexId())
-                .doc(json)
+                .doc(json, XContentType.JSON)
                 .upsert(indexRequest);
 
         client.update(updateRequest).get();
@@ -290,7 +290,7 @@ public class IndexService {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("An error occurred while initialising search engine.\n\n", e);
-            
+
         }
     }
 
@@ -299,7 +299,7 @@ public class IndexService {
             AbstractIndex index = Indexer.createIndexer(indexable).createUpdatedIndex();
             bulkRequest.add(client.prepareIndex(SearchService.ELASTIC_SEARCH_INDEX_NAME, index.getType().name(), indexable.getIndexId())
                     //.setSource(StringUtils.stripAccents(index.createJson())));
-                    .setSource(index.createJson()));
+                    .setSource(index.createJson(), XContentType.JSON));
         } catch (Exception e) {
             log.error("Error creating index source for " + indexable.toString() + ".\n\n", e);
         }

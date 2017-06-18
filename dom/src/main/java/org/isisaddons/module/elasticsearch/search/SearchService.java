@@ -9,59 +9,29 @@ import org.codehaus.jackson.type.TypeReference;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.index.query.functionscore.WeightBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.isisaddons.module.elasticsearch.search.elastic.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.Normalizer;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@DomainService(nature = NatureOfService.DOMAIN)
-public class SearchService {
+@DomainService(nature = NatureOfService.VIEW)
+public class SearchService extends ElasticSearchService {
     public static final String ELASTIC_SEARCH_INDEX_NAME = "portal";
 
     private static final String ELASTIC_SEARCH_TYPE_WEIGHTS_KEY = "search.service.default.type.weights";
 
     private static final Logger log = LoggerFactory.getLogger(SearchService.class);
-
-    @Programmatic
-    @PostConstruct
-    public void postConstruct() throws UnknownHostException {
-        client = createElasticSearchClient();
-    }
-
-    @Programmatic
-    @PreDestroy
-    public void preDestroy() {
-        client.close();
-    }
-
-    public static Client createElasticSearchClient() throws UnknownHostException {
-        Settings settings = Settings.builder()
-                .put("cluster.name", "elasticsearch")
-                .build();
-        TransportClient client = new PreBuiltTransportClient(settings)
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
-        return client;
-    }
 
     @Action(publishing = Publishing.ENABLED)
     public SearchResultsPage find(String query, @Parameter(optionality = Optionality.OPTIONAL) Type preferredType) {
@@ -88,7 +58,7 @@ public class SearchService {
             boostValue = 10;
         }
 
-        SearchRequestBuilder builder = client.prepareSearch(ELASTIC_SEARCH_INDEX_NAME)
+        SearchRequestBuilder builder = getClient().prepareSearch(ELASTIC_SEARCH_INDEX_NAME)
                 .setTypes(Type.toArray())
                 .setSize(25)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
@@ -136,7 +106,7 @@ public class SearchService {
             builder = builder.setQuery(QueryBuilders.functionScoreQuery(functions));
 
         } else {
-            String defaultWeights = "{\"data\":{\"company\":1,\"contact\":2,\"inport\":3,\"order\":4,\"phonenumber\":5,\"subscription\":6}}";
+            String defaultWeights = "{\"company\":1,\"contact\":2,\"inport\":3,\"order\":4,\"phonenumber\":5,\"subscription\":6}";
 
             //String defaultWeights = applicationSettingsService.find(ELASTIC_SEARCH_TYPE_WEIGHTS_KEY).valueAsString();
 
@@ -185,8 +155,6 @@ public class SearchService {
                 .filter(r -> r.getResult() != null)
                 .collect(Collectors.toCollection(() -> Sets.newTreeSet()));
     }
-
-    private Client client;
 
     @Inject
     private ServiceRegistry serviceRegistry;

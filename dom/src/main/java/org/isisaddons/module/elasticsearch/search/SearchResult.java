@@ -7,8 +7,8 @@ import lombok.Setter;
 import org.apache.isis.applib.annotation.*;
 import org.apache.isis.applib.services.bookmark.Bookmark;
 import org.apache.isis.applib.services.bookmark.BookmarkService2;
-import org.isisaddons.module.elasticsearch.search.elastic.IndexService;
-import org.isisaddons.module.elasticsearch.search.elastic.Indexable;
+import org.isisaddons.module.elasticsearch.search.elastic.indexing.IndexService;
+import org.isisaddons.module.elasticsearch.search.elastic.indexing.Indexable;
 
 import javax.inject.Inject;
 
@@ -24,28 +24,20 @@ public class SearchResult implements Comparable<SearchResult> {
         this.source = source;
     }
 
-    // {{ BookmarkId (property)
     @Property(hidden = Where.EVERYWHERE)
     @Getter
     @Setter
     private String bookmarkId;
-    // }}
 
-    // {{ ResultClassName (property)
     @Property(hidden = Where.EVERYWHERE)
     @Getter
     @Setter
     private String resultClassName;
-    // }}
 
-    // {{ Source (property)
     @PropertyLayout(hidden = Where.EVERYWHERE)
     @Getter
     @Setter
     private String source;
-    // }}
-
-    // {{ Match (property)
     @MemberOrder(sequence = "20")
     @PropertyLayout(named = "Match")
     public String getMatch() {
@@ -56,34 +48,22 @@ public class SearchResult implements Comparable<SearchResult> {
             return "Invalid search result. Probably removed from search index.";
         }
     }
-    // }}
 
-    // {{ Score (property)
     @MemberOrder(sequence = "30")
     @PropertyLayout(named = "Score")
     @Getter
     @Setter
     private float score;
-    // }}
 
-    // {{ Bookmark (property)
     @Programmatic
     public Bookmark getBookmark() throws ClassNotFoundException {
         return bookmarkServiceDefault.bookmarkFor(Class.forName(getResultClassName()), getBookmarkId());
     }
-    // }}
 
     public Indexable getResult() {
         try {
             return (Indexable) bookmarkServiceDefault.lookup(getBookmark(), BookmarkService2.FieldResetPolicy.DONT_RESET);
         } catch (Exception e) {
-            /*
-            try {
-                indexService.deleteDocument(getBookmark());
-            } catch (ClassNotFoundException e1) {
-                e1.printStackTrace();
-            }
-            */
         }
         return null;
     }

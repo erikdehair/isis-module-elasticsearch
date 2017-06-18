@@ -1,5 +1,7 @@
 package org.isisaddons.module.elasticsearch.search;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.isis.applib.annotation.*;
 import org.isisaddons.module.elasticsearch.search.elastic.Type;
 
@@ -7,12 +9,8 @@ import javax.inject.Inject;
 import java.util.SortedSet;
 
 @ViewModel
-@ViewModelLayout(named = "Zoekresultaten", cssClassFa = "fa fa-search")
-@MemberGroupLayout(columnSpans = {4, 0, 0, 12},
-        left = {SearchResultsPage.BLOCK_TITLE_SEARCHCOMMAND})
+@ViewModelLayout(cssClassFa = "fa fa-search")
 public class SearchResultsPage {
-    static final String BLOCK_TITLE_SEARCHCOMMAND = "Zoekopdracht";
-
     public SearchResultsPage() {
     }
 
@@ -22,44 +20,20 @@ public class SearchResultsPage {
     }
 
     public String title() {
-        return "Zoekresultaten";
+        return "Search results";
     }
 
-    // {{ Query (property)
+    @Getter @Setter
     private String query;
 
-    @MemberOrder(name = BLOCK_TITLE_SEARCHCOMMAND, sequence = "10")
-    @PropertyLayout(named = "Zoekterm(en)")
-    public String getQuery() {
-        return query;
-    }
-
-    public void setQuery(final String query) {
-        this.query = query;
-    }
-    // }}
-
-    // {{ PreferredType (property)
+    @Property(hidden = Where.EVERYWHERE)
+    @Getter @Setter
     private String preferredType;
 
-    @Property(hidden = Where.EVERYWHERE)
-    public String getPreferredType() {
-        return preferredType;
-    }
-
-    public void setPreferredType(final String preferredType) {
-        this.preferredType = preferredType;
-    }
-
-    @MemberOrder(name = BLOCK_TITLE_SEARCHCOMMAND, sequence = "20")
-    @PropertyLayout(named = "Voorkeurselement")
     public String getPreferredTypeName() {
         return (getPreferredType() != null ? Type.valueOf(getPreferredType()).getTypeName() : null);
     }
-    // }}
 
-    @MemberOrder(name = BLOCK_TITLE_SEARCHCOMMAND, sequence = "30")
-    @PropertyLayout(named = "Aantal resultaten")
     public Integer getNumberOfResults() {
         return findResults().size();
     }
@@ -74,7 +48,7 @@ public class SearchResultsPage {
         return this.results;
     }
 
-    @CollectionLayout(named = "Resultaten", paged = 50, defaultView = "table")
+    @CollectionLayout(paged = 50, defaultView = "table")
     public SortedSet<SearchResult> getResults() {
         return findResults();
     }

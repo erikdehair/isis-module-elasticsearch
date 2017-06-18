@@ -1,8 +1,5 @@
 package org.isisaddons.module.elasticsearch.search.elastic;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
-
 import java.util.Arrays;
 
 public enum Type {
@@ -20,21 +17,17 @@ public enum Type {
         return typeName;
     }
 
-    private Type(String typeName) {
+    Type(String typeName) {
         this.typeName = typeName;
     }
 
     public static String[] toArray() {
-        return Iterables.toArray(Iterables.transform(Arrays.asList(values()), new Function<Type, String>() {
-                    @Override
-                    public String apply(Type input) {
-                        return input.name();
-                    }
-                }),
-                String.class);
+        return (String[])Arrays.stream(values())
+                .map(v -> v.name())
+                .toArray();
     }
 
     public String toString() {
-        return this.typeName;
+        return getTypeName();
     }
 }

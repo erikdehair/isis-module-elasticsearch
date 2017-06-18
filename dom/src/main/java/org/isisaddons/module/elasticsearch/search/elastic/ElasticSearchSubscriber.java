@@ -7,6 +7,8 @@ import org.apache.isis.applib.annotation.NatureOfService;
 import org.apache.isis.applib.services.eventbus.ObjectPersistedEvent;
 import org.apache.isis.applib.services.eventbus.ObjectRemovingEvent;
 import org.apache.isis.applib.services.eventbus.ObjectUpdatedEvent;
+import org.isisaddons.module.elasticsearch.search.elastic.indexing.IndexService;
+import org.isisaddons.module.elasticsearch.search.elastic.indexing.Indexable;
 
 import javax.inject.Inject;
 
