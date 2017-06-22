@@ -76,7 +76,6 @@ public class ElasticSearchDemoObject implements Comparable<ElasticSearchDemoObje
         return true;
     }
 
-
     //region > compareTo
 
     @Override
@@ -87,6 +86,11 @@ public class ElasticSearchDemoObject implements Comparable<ElasticSearchDemoObje
     }
 
     //endregion
+
+    @Override
+    public String toString(){
+        return getClass().getName() +"[name="+getName()+"]";
+    }
 
     //region > injected services
 

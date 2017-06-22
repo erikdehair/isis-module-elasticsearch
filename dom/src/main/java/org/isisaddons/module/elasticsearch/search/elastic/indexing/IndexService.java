@@ -46,7 +46,7 @@ public class IndexService {
 
     public void deleteDocument(Indexable deletedObject) {
         try {
-            AbstractIndex index = Indexer.createIndexer(deletedObject).createUpdatedIndex();
+            AbstractIndex index = indexerFactory.createIndexer(deletedObject).createUpdatedIndex();
             DeleteRequest deleteRequest = new DeleteRequest(SearchService.ELASTIC_SEARCH_INDEX_NAME, index.getType().name(),
                     deletedObject.getIndexId());
             client.delete(deleteRequest).get();
@@ -90,7 +90,7 @@ public class IndexService {
     public void updateIndex(Indexable updatedObject) {
         try {
             if (updatedObject.isIndexable()) {
-                insertOrUpdate(updatedObject, Indexer.createIndexer(updatedObject).createUpdatedIndex());
+                insertOrUpdate(updatedObject, indexerFactory.createIndexer(updatedObject).createUpdatedIndex());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -196,6 +196,8 @@ public class IndexService {
                 .doc(json, XContentType.JSON)
                 .upsert(indexRequest);
 
+        log.info("Updating Elastic Search for "+ updatedObject.toString() +" >>> "+ json);
+
         client.update(updateRequest).get();
     }
 
@@ -296,7 +298,7 @@ public class IndexService {
 
     private void addToBulkRequest(BulkRequestBuilder bulkRequest, Indexable indexable) {
         try {
-            AbstractIndex index = Indexer.createIndexer(indexable).createUpdatedIndex();
+            AbstractIndex index = indexerFactory.createIndexer(indexable).createUpdatedIndex();
             bulkRequest.add(client.prepareIndex(SearchService.ELASTIC_SEARCH_INDEX_NAME, index.getType().name(), indexable.getIndexId())
                     //.setSource(StringUtils.stripAccents(index.createJson())));
                     .setSource(index.createJson(), XContentType.JSON));
@@ -318,4 +320,7 @@ public class IndexService {
 
     @Inject
     private BookmarkService2 bookmarkServiceDefault;
+
+    @Inject
+    private IndexerFactory indexerFactory;
 }

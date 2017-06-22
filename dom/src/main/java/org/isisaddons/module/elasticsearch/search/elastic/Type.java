@@ -22,9 +22,9 @@ public enum Type {
     }
 
     public static String[] toArray() {
-        return (String[])Arrays.stream(values())
+        return Arrays.stream(values())
                 .map(v -> v.name())
-                .toArray();
+                .toArray(String[]::new);
     }
 
     public String toString() {

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 @DomainService(nature = NatureOfService.VIEW)
 public class SearchService extends ElasticSearchService {
-    public static final String ELASTIC_SEARCH_INDEX_NAME = "portal";
+    public static final String ELASTIC_SEARCH_INDEX_NAME = "isis-module-elasticsearch";
 
     private static final String ELASTIC_SEARCH_TYPE_WEIGHTS_KEY = "search.service.default.type.weights";
 

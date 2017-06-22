@@ -8,6 +8,8 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -22,6 +24,9 @@ import java.util.Properties;
  */
 @DomainService(nature = NatureOfService.DOMAIN)
 public class ElasticSearchService {
+
+    private static final Logger log = LoggerFactory.getLogger(ElasticSearchService.class);
+
     @Programmatic
     @PostConstruct
     public void postConstruct() throws UnknownHostException {
@@ -64,7 +69,7 @@ public class ElasticSearchService {
             String filename = "elasticsearch.properties";
             input = SearchService.class.getClassLoader().getResourceAsStream(filename);
             if(input==null){
-                System.out.println("Sorry, unable to find " + filename);
+                log.error("Sorry, unable to find " + filename);
                 return new Properties();
             }
 

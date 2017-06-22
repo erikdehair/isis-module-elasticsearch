@@ -18,7 +18,8 @@ public class ElasticSearchDemoObjectIndexer extends Indexer {
         ElasticSearchDemoObject p = (ElasticSearchDemoObject) indexable;
         ElasticSearchDemoObjectIndex index = new ElasticSearchDemoObjectIndex();
         index.setTenancy(p.getTenancy());
-
+        index.setName(p.getName());
+        index.setDescription(p.getDescription());
         return index;
     }
 }
