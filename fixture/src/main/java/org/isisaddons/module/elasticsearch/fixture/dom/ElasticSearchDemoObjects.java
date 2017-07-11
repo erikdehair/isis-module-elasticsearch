@@ -16,17 +16,10 @@
  */
 package org.isisaddons.module.elasticsearch.fixture.dom;
 
-import java.util.List;
 import org.apache.isis.applib.DomainObjectContainer;
-import org.apache.isis.applib.annotation.Action;
-import org.apache.isis.applib.annotation.ActionLayout;
-import org.apache.isis.applib.annotation.BookmarkPolicy;
-import org.apache.isis.applib.annotation.DomainService;
-import org.apache.isis.applib.annotation.DomainServiceLayout;
-import org.apache.isis.applib.annotation.MemberOrder;
-import org.apache.isis.applib.annotation.NatureOfService;
-import org.apache.isis.applib.annotation.ParameterLayout;
-import org.apache.isis.applib.annotation.SemanticsOf;
+import org.apache.isis.applib.annotation.*;
+
+import java.util.List;
 
 @DomainService(
         nature = NatureOfService.VIEW,
@@ -57,9 +50,11 @@ public class ElasticSearchDemoObjects {
     
     @MemberOrder(sequence = "2")
     public ElasticSearchDemoObject create(
-            final @ParameterLayout(named = "Name") String name) {
+            final @ParameterLayout(named = "Name") String name,
+            final @ParameterLayout(named = "Description") String description) {
         final ElasticSearchDemoObject obj = container.newTransientInstance(ElasticSearchDemoObject.class);
         obj.setName(name);
+        obj.setDescription(description);
         container.persistIfNotAlready(obj);
         return obj;
     }

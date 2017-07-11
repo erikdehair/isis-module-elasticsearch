@@ -1,4 +1,4 @@
-package org.isisaddons.module.elasticsearch.search;
+package org.isisaddons.module.elasticsearch.search.result;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
@@ -7,8 +7,8 @@ import lombok.Setter;
 import org.apache.isis.applib.annotation.*;
 import org.apache.isis.applib.services.bookmark.Bookmark;
 import org.apache.isis.applib.services.bookmark.BookmarkService2;
-import org.isisaddons.module.elasticsearch.search.elastic.indexing.IndexService;
-import org.isisaddons.module.elasticsearch.search.elastic.indexing.Indexable;
+import org.isisaddons.module.elasticsearch.indexing.IndexService;
+import org.isisaddons.module.elasticsearch.indexing.Indexable;
 
 import javax.inject.Inject;
 
@@ -72,6 +72,7 @@ public class SearchResult implements Comparable<SearchResult> {
     public int compareTo(SearchResult o) {
         return ComparisonChain.start()
                 .compare(getScore(), o.getScore(), Ordering.natural().reverse())
+                .compare(getBookmarkId(), o.getBookmarkId())
                 .result();
     }
 

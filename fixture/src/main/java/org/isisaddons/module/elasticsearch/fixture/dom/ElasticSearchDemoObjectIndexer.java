@@ -1,8 +1,8 @@
 package org.isisaddons.module.elasticsearch.fixture.dom;
 
-import org.isisaddons.module.elasticsearch.search.elastic.indexing.AbstractIndex;
-import org.isisaddons.module.elasticsearch.search.elastic.indexing.Indexable;
-import org.isisaddons.module.elasticsearch.search.elastic.indexing.Indexer;
+import org.isisaddons.module.elasticsearch.indexing.AbstractIndex;
+import org.isisaddons.module.elasticsearch.indexing.Indexable;
+import org.isisaddons.module.elasticsearch.indexing.Indexer;
 
 /**
  * Created by E. de Hair <e.dehair@pocos.nl> on 6/18/17.

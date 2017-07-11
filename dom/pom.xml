@@ -264,6 +264,14 @@ Copyright 2014~2015 Dan Haywood
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.isis.core</groupId>
+            <artifactId>isis-core-metamodel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.isis.core</groupId>
+            <artifactId>isis-core-runtime</artifactId>
+        </dependency>
     </dependencies>
 
     <!-- http://central.sonatype.org/pages/apache-maven.html -->

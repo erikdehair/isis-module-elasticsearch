@@ -16,19 +16,16 @@
  */
 package org.isisaddons.module.elasticsearch.integtests;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
+import org.apache.isis.applib.fixturescripts.FixtureScripts;
 import org.assertj.core.api.Assertions;
 import org.isisaddons.module.elasticsearch.fixture.dom.ElasticSearchDemoObject;
+import org.isisaddons.module.elasticsearch.fixture.dom.ElasticSearchDemoObjects;
+import org.isisaddons.module.elasticsearch.fixture.scripts.scenarios.ElasticSearchDemoObjectsFixture;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.apache.isis.applib.fixturescripts.FixtureScripts;
-
-import org.isisaddons.module.elasticsearch.fixture.dom.ElasticSearchDemoObjects;
-import org.isisaddons.module.elasticsearch.fixture.scripts.scenarios.ElasticSearchDemoObjectsFixture;
+import javax.inject.Inject;
+import java.util.List;
 
 
 public class ElasticSearchDemoObjectsTest extends ElasticSearchModuleIntegTest {
@@ -58,7 +55,7 @@ public class ElasticSearchDemoObjectsTest extends ElasticSearchModuleIntegTest {
     @Test
     public void create() throws Exception {
 
-        wrap(elasticSearchDemoObjects).create("Faz");
+        wrap(elasticSearchDemoObjects).create("Faz","FazDescription");
         
         final List<ElasticSearchDemoObject> all = wrap(elasticSearchDemoObjects).listAll();
         Assertions.assertThat(all.size()).isEqualTo(4);

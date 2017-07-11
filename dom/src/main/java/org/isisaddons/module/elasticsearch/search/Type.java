@@ -1,14 +1,14 @@
-package org.isisaddons.module.elasticsearch.search.elastic;
+package org.isisaddons.module.elasticsearch.search;
 
 import java.util.Arrays;
 
 public enum Type {
-    empty_choice("Geen voorkeur"),
-    subscription("Abonnement"),
-    contact("Contactpersoon"),
-    company("Klant"),
+    empty_choice("No preference"),
+    subscription("Subscription"),
+    contact("Contact"),
+    company("Company"),
     order("Order"),
-    porting("Portering"),
+    porting("Porting"),
     phonenumber("Telefoonnummer");
 
     private final String typeName;

@@ -22,18 +22,14 @@ import lombok.Setter;
 import org.apache.isis.applib.DomainObjectContainer;
 import org.apache.isis.applib.annotation.*;
 import org.apache.isis.applib.services.bookmark.BookmarkService2;
-import org.isisaddons.module.elasticsearch.search.elastic.indexing.Indexable;
+import org.isisaddons.module.elasticsearch.indexing.Indexable;
 
 import javax.inject.Inject;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.VersionStrategy;
+import javax.jdo.annotations.*;
 
 @javax.jdo.annotations.PersistenceCapable(
-        identityType=IdentityType.DATASTORE,
+        identityType=IdentityType.APPLICATION,
         schema="elasticsearch")
-@javax.jdo.annotations.DatastoreIdentity(
-        strategy=javax.jdo.annotations.IdGeneratorStrategy.IDENTITY,
-         column="id")
 @javax.jdo.annotations.Version(
         strategy=VersionStrategy.VERSION_NUMBER, 
         column="version")
@@ -44,6 +40,11 @@ import javax.jdo.annotations.VersionStrategy;
         bookmarking = BookmarkPolicy.AS_ROOT
 )
 public class ElasticSearchDemoObject implements Comparable<ElasticSearchDemoObject>, Indexable {
+
+    @PrimaryKey
+    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+    @Getter @Setter
+    private int id;
 
     //region > name (property)
     @javax.jdo.annotations.Column(allowsNull="false")
@@ -68,7 +69,7 @@ public class ElasticSearchDemoObject implements Comparable<ElasticSearchDemoObje
 
     @Override
     public String getSearchResultSummary() {
-        return "This is the summary of "+ getName() + " with description "+ getDescription();
+        return "This is the summary of "+ getName() + " with description "+ getDescription() +" and id "+ getId();
     }
 
     @Override
@@ -81,6 +82,7 @@ public class ElasticSearchDemoObject implements Comparable<ElasticSearchDemoObje
     @Override
     public int compareTo(ElasticSearchDemoObject other) {
         return ComparisonChain.start()
+                .compare(getId(), other.getId())
                 .compare(getName(), other.getName())
                 .result();
     }

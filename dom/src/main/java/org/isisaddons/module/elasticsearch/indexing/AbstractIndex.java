@@ -1,4 +1,4 @@
-package org.isisaddons.module.elasticsearch.search.elastic.indexing;
+package org.isisaddons.module.elasticsearch.indexing;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -6,12 +6,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.isis.applib.annotation.Programmatic;
 import org.isisaddons.module.elasticsearch.util.JsonSerializers;
-import org.isisaddons.module.elasticsearch.search.elastic.Type;
 import org.joda.time.LocalDate;
 
-public abstract class AbstractIndex {
-    protected static final String TITLE_JOINER = ";";
-
+public abstract class AbstractIndex<T extends Indexable> {
     /**
      * A tenancy can be used to only retreive items the user has access to.
      */
@@ -24,7 +21,7 @@ public abstract class AbstractIndex {
      *
      * @return
      */
-    public abstract Type getType();
+    public abstract Class<T> getType();
 
     /**
      * This JSON string will be fed to Elastic Search indexing. Each item in the JSON string will be added to the

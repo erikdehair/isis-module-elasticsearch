@@ -1,4 +1,4 @@
-package org.isisaddons.module.elasticsearch.search.elastic.indexing;
+package org.isisaddons.module.elasticsearch.indexing;
 
 import org.junit.Assert;
 import org.junit.Test;

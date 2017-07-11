@@ -21,7 +21,9 @@
       "memberGroups": {
         "General": {
           "members": {
-            "name": {}
+            "id": {},
+            "name": {},
+            "description": {}
           }
         }
       }

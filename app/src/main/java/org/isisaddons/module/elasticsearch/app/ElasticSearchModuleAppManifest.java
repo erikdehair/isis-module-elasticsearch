@@ -23,6 +23,7 @@ import org.apache.isis.applib.AppManifest;
 import org.apache.isis.applib.fixturescripts.FixtureScript;
 import org.isisaddons.module.elasticsearch.ElasticSearchModule;
 import org.isisaddons.module.elasticsearch.fixture.ElasticSearchFixtureModule;
+import org.isisaddons.module.elasticsearch.indexing.IndexableSubscriber;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,7 +54,7 @@ public class ElasticSearchModuleAppManifest implements AppManifest {
     public List<Class<?>> getAdditionalServices() {
         return Lists.newArrayList(
                 org.isisaddons.module.elasticsearch.search.SearchService.class,
-                org.isisaddons.module.elasticsearch.search.elastic.ElasticSearchSubscriber.class);
+                IndexableSubscriber.class);
     }
 
     /**

@@ -2,20 +2,16 @@ package org.isisaddons.module.elasticsearch.fixture.dom;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.isisaddons.module.elasticsearch.search.elastic.Type;
-import org.isisaddons.module.elasticsearch.search.elastic.indexing.AbstractIndex;
+import org.isisaddons.module.elasticsearch.indexing.AbstractIndex;
 
 /**
  * Created by E. de Hair <e.dehair@pocos.nl> on 6/18/17.
  */
-public class ElasticSearchDemoObjectIndex extends AbstractIndex {
-
-    public final static Type type = Type.company;
+public class ElasticSearchDemoObjectIndex extends AbstractIndex<ElasticSearchDemoObject> {
 
     @Override
-    public Type getType()
-    {
-        return type;
+    public Class<ElasticSearchDemoObject> getType() {
+        return ElasticSearchDemoObject.class;
     }
 
     @Getter

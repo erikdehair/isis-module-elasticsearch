@@ -1,9 +1,10 @@
-package org.isisaddons.module.elasticsearch.search;
+package org.isisaddons.module.elasticsearch.search.result;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.isis.applib.annotation.*;
-import org.isisaddons.module.elasticsearch.search.elastic.Type;
+import org.isisaddons.module.elasticsearch.search.SearchService;
+import org.isisaddons.module.elasticsearch.search.Type;
 
 import javax.inject.Inject;
 import java.util.SortedSet;

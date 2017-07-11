@@ -1,34 +1,30 @@
 package org.isisaddons.module.elasticsearch.search;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.apache.isis.applib.annotation.*;
 import org.apache.isis.applib.services.registry.ServiceRegistry;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
-import org.elasticsearch.index.query.functionscore.WeightBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.isisaddons.module.elasticsearch.search.elastic.Type;
+import org.isisaddons.module.elasticsearch.search.result.SearchResult;
+import org.isisaddons.module.elasticsearch.search.result.SearchResultsPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.text.Normalizer;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @DomainService(nature = NatureOfService.VIEW)
 public class SearchService extends ElasticSearchService {
-    public static final String ELASTIC_SEARCH_INDEX_NAME = "isis-module-elasticsearch";
-
     private static final String ELASTIC_SEARCH_TYPE_WEIGHTS_KEY = "search.service.default.type.weights";
 
     private static final Logger log = LoggerFactory.getLogger(SearchService.class);
@@ -49,29 +45,18 @@ public class SearchService extends ElasticSearchService {
         }
 
         query = Normalizer.normalize(query, Normalizer.Form.NFD);
-        //query = StringUtils.stripAccents(query);
 
         boolean isPreferationSet = preferredType != null && !preferredType.equals(Type.empty_choice);
 
-        Integer boostValue = 1;
-        if (isPreferationSet) {
-            boostValue = 10;
-        }
-
-        SearchRequestBuilder builder = getClient().prepareSearch(ELASTIC_SEARCH_INDEX_NAME)
-                .setTypes(Type.toArray())
+        SearchRequestBuilder builder = getClient().prepareSearch(ElasticSearchService.getIndexName())
+                //.setTypes(Type.toArray(), "")
+                .setTypes("org.isisaddons.module.elasticsearch.fixture.dom.ElasticSearchDemoObject")
                 .setSize(25)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .setExplain(false);
 
-        //Total query builder
-        QueryBuilder queryBuilder;
-
         //QueryBuilder of the general part
         QueryBuilder generalQueryBuilder;
-
-        //MatchQueryBuilder matchAll = QueryBuilders.matchQuery("_all", query);
-        //generalQueryBuilder = QueryBuilders.matchPhrasePrefixQuery("_all", query).slop(100).maxExpansions(50);
 
         generalQueryBuilder = QueryBuilders.boolQuery();
         String termWildCard, termExact;
@@ -83,60 +68,8 @@ public class SearchService extends ElasticSearchService {
             generalQueryBuilder = ((BoolQueryBuilder) generalQueryBuilder).should(QueryBuilders.matchQuery("_all", termExact).boost(2));
         }
 
-        /*
-        if(!SecurityUtil.isSuperUser())
-		{
-			PortalCompany currentUsersCompany = companyService.findCompanyRepresentedByUser(SecurityUtil.getUsername()); 
-			queryBuilder = QueryBuilders.boolQuery()
-					.must(QueryBuilders.termQuery("tenancy", currentUsersCompany.getId()).boost(new Float(0.1)))
-					.should(generalQueryBuilder);
-		}
-		else
-		{
-			queryBuilder = generalQueryBuilder;
-		}
-		*/
-        queryBuilder = generalQueryBuilder;
+        builder.setQuery(generalQueryBuilder);
 
-        if (isPreferationSet) {
-            FunctionScoreQueryBuilder.FilterFunctionBuilder[] functions = {
-                    new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.matchQuery("_type", preferredType.name()),
-                            new WeightBuilder().setWeight(boostValue.floatValue()))
-            };
-            builder = builder.setQuery(QueryBuilders.functionScoreQuery(functions));
-
-        } else {
-            String defaultWeights = "{\"company\":1,\"contact\":2,\"inport\":3,\"order\":4,\"phonenumber\":5,\"subscription\":6}";
-
-            //String defaultWeights = applicationSettingsService.find(ELASTIC_SEARCH_TYPE_WEIGHTS_KEY).valueAsString();
-
-            HashMap<String, Integer> typeWeights = new HashMap<>();
-            try {
-                typeWeights = new ObjectMapper()
-                        .readValue(defaultWeights, new TypeReference<Map<String, Integer>>(){});
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            String[] types = Type.toArray();
-            FunctionScoreQueryBuilder.FilterFunctionBuilder[] functions = new FunctionScoreQueryBuilder.FilterFunctionBuilder[types.length];
-            String typeName;
-            Integer weight;
-            for (int i = 0; i < types.length; i++) {
-                typeName = types[i];
-
-                if (typeWeights.containsKey(typeName)) {
-                    weight = typeWeights.get(typeName);
-                } else {
-                    weight = 1;
-                }
-
-                functions[i] = new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.matchQuery("_type", typeName),
-                        new WeightBuilder().setWeight(weight));
-            }
-
-            builder = builder.setQuery(QueryBuilders.functionScoreQuery(functions));
-        }
         log.info(builder.toString());
         SearchResponse response = builder.execute().actionGet();
         log.info(response.toString());
@@ -145,15 +78,14 @@ public class SearchService extends ElasticSearchService {
 
         return Arrays.stream(hits)
                 .map(h -> {
-                    String[] idConfig = h.getId().split(":");
-                    String className = idConfig[0];
-                    String id = idConfig[1];
+                    String className = h.getType();
+                    String id = h.getId();
                     SearchResult result = new SearchResult(id, className, h.getScore(), h.getSourceAsString());
                     serviceRegistry.injectServicesInto(result);
                     return result;
                 })
                 .filter(r -> r.getResult() != null)
-                .collect(Collectors.toCollection(() -> Sets.newTreeSet()));
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     @Inject

@@ -35,15 +35,15 @@ public class ElasticSearchDemoObjectsFixture extends DiscoverableFixtureScript {
 	executionContext.executeChild(this, new ElasticSearchDemoObjectsTearDownFixture());
 
         // create
-        create("Foo", executionContext);
-        create("Bar", executionContext);
-        create("Baz", executionContext);
+        create("Foo", "Lorem ipsum", executionContext);
+        create("Bar", "Bar dolor sit amet,", executionContext);
+        create("Baz", "Foo consectetur adipiscing elit", executionContext);
     }
 
     // //////////////////////////////////////
 
-    private ElasticSearchDemoObject create(final String name, final ExecutionContext executionContext) {
-        return executionContext.addResult(this, elasticSearchDemoObjects.create(name));
+    private ElasticSearchDemoObject create(final String name, final String description, final ExecutionContext executionContext) {
+        return executionContext.addResult(this, elasticSearchDemoObjects.create(name, description));
     }
 
     // //////////////////////////////////////
