@@ -21,6 +21,7 @@ package org.isisaddons.module.elasticsearch.app;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.isis.applib.fixturescripts.FixtureScript;
+import org.isisaddons.module.elasticsearch.fixture.scripts.scenarios.AnotherElasticSearchDemoObjectsFixture;
 import org.isisaddons.module.elasticsearch.fixture.scripts.scenarios.ElasticSearchDemoObjectsFixture;
 
 import java.util.HashMap;
@@ -37,7 +38,9 @@ public class ElasticSearchModuleAppManifestWithFixtures extends ElasticSearchMod
      */
     @Override
     public List<Class<? extends FixtureScript>> getFixtures() {
-        return Lists.newArrayList(ElasticSearchDemoObjectsFixture.class);
+        return Lists.newArrayList(
+                ElasticSearchDemoObjectsFixture.class,
+                AnotherElasticSearchDemoObjectsFixture.class);
     }
 
     /**

@@ -17,14 +17,13 @@
 package org.isisaddons.module.elasticsearch.fixture.scripts.scenarios;
 
 import org.apache.isis.applib.fixturescripts.DiscoverableFixtureScript;
-
+import org.isisaddons.module.elasticsearch.fixture.dom.AnotherElasticSearchDemoObject;
 import org.isisaddons.module.elasticsearch.fixture.dom.ElasticSearchDemoObjects;
-import org.isisaddons.module.elasticsearch.fixture.scripts.teardown.ElasticSearchDemoObjectsTearDownFixture;
-import org.isisaddons.module.elasticsearch.fixture.dom.ElasticSearchDemoObject;
+import org.isisaddons.module.elasticsearch.fixture.scripts.teardown.AnotherElasticSearchDemoObjectsTearDownFixture;
 
-public class ElasticSearchDemoObjectsFixture extends DiscoverableFixtureScript {
+public class AnotherElasticSearchDemoObjectsFixture extends DiscoverableFixtureScript {
 
-    public ElasticSearchDemoObjectsFixture() {
+    public AnotherElasticSearchDemoObjectsFixture() {
         withDiscoverability(Discoverability.DISCOVERABLE);
     }
 
@@ -32,7 +31,7 @@ public class ElasticSearchDemoObjectsFixture extends DiscoverableFixtureScript {
     protected void execute(final ExecutionContext executionContext) {
 
         // prereqs
-	    executionContext.executeChild(this, new ElasticSearchDemoObjectsTearDownFixture());
+	executionContext.executeChild(this, new AnotherElasticSearchDemoObjectsTearDownFixture());
 
         // create
         create("Foo", "Lorem ipsum", executionContext);
@@ -42,8 +41,8 @@ public class ElasticSearchDemoObjectsFixture extends DiscoverableFixtureScript {
 
     // //////////////////////////////////////
 
-    private ElasticSearchDemoObject create(final String name, final String description, final ExecutionContext executionContext) {
-        return executionContext.addResult(this, elasticSearchDemoObjects.createDemoObject(name, description));
+    private AnotherElasticSearchDemoObject create(final String name, final String description, final ExecutionContext executionContext) {
+        return executionContext.addResult(this, elasticSearchDemoObjects.createAnotherDemoObject(name, description));
     }
 
     // //////////////////////////////////////

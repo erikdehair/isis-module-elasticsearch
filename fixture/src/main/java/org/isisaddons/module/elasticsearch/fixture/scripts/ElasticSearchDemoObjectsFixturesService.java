@@ -16,18 +16,15 @@
  */
 package org.isisaddons.module.elasticsearch.fixture.scripts;
 
-import java.util.List;
-import org.apache.isis.applib.annotation.Action;
-import org.apache.isis.applib.annotation.DomainService;
-import org.apache.isis.applib.annotation.DomainServiceLayout;
-import org.apache.isis.applib.annotation.MemberOrder;
-import org.apache.isis.applib.annotation.NatureOfService;
-import org.apache.isis.applib.annotation.RestrictTo;
+import org.apache.isis.applib.annotation.*;
 import org.apache.isis.applib.fixturescripts.FixtureResult;
 import org.apache.isis.applib.fixturescripts.FixtureScript;
 import org.apache.isis.applib.fixturescripts.FixtureScripts;
 import org.apache.isis.applib.fixturescripts.SimpleFixtureScript;
+import org.isisaddons.module.elasticsearch.fixture.scripts.scenarios.AnotherElasticSearchDemoObjectsFixture;
 import org.isisaddons.module.elasticsearch.fixture.scripts.scenarios.ElasticSearchDemoObjectsFixture;
+
+import java.util.List;
 
 /**
  * Enables fixtures to be installed from the application.
@@ -69,6 +66,16 @@ public class ElasticSearchDemoObjectsFixturesService extends FixtureScripts {
     @MemberOrder(sequence="20")
     public Object installFixturesAndReturnFirst() {
         final FixtureScript script = findFixtureScriptFor(ElasticSearchDemoObjectsFixture.class);
+        final List<FixtureResult> run = script.run(null);
+        return run.get(0).getObject();
+    }
+
+    @Action(
+            restrictTo = RestrictTo.PROTOTYPING
+    )
+    @MemberOrder(sequence="20")
+    public Object installOtherFixturesAndReturnFirst() {
+        final FixtureScript script = findFixtureScriptFor(AnotherElasticSearchDemoObjectsFixture.class);
         final List<FixtureResult> run = script.run(null);
         return run.get(0).getObject();
     }

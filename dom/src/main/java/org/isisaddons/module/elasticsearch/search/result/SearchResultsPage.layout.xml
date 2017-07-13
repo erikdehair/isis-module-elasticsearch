@@ -8,11 +8,12 @@
     </row>
     <row>
         <col span="4">
-            <ns2:fieldSet name="Zoekopdracht" id="zoekopdracht" unreferencedProperties="true">
+            <ns2:fieldSet name="Query" id="query" unreferencedProperties="true">
                 <ns2:property id="query"/>
-                <ns2:property id="preferredTypeName"/>
+                <ns2:property id="preferredType">
+                    <ns2:action id="searchAgain"/>
+                </ns2:property>
                 <ns2:property id="numberOfResults"/>
-                <ns2:property id="preferredType"/>
             </ns2:fieldSet>
         </col>
         <col span="12" unreferencedCollections="true">

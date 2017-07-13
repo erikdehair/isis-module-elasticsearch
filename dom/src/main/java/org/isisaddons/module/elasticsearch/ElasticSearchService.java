@@ -1,4 +1,4 @@
-package org.isisaddons.module.elasticsearch.search;
+package org.isisaddons.module.elasticsearch;
 
 import lombok.Getter;
 import org.apache.isis.applib.annotation.DomainService;

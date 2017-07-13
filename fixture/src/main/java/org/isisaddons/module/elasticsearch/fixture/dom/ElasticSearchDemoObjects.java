@@ -40,8 +40,19 @@ public class ElasticSearchDemoObjects {
             bookmarking = BookmarkPolicy.AS_ROOT
     )
     @MemberOrder(sequence = "1")
-    public List<ElasticSearchDemoObject> listAll() {
+    public List<ElasticSearchDemoObject> listAllDemoObjects() {
         return container.allInstances(ElasticSearchDemoObject.class);
+    }
+
+    @Action(
+            semantics = SemanticsOf.SAFE
+    )
+    @ActionLayout(
+            bookmarking = BookmarkPolicy.AS_ROOT
+    )
+    @MemberOrder(sequence = "1")
+    public List<AnotherElasticSearchDemoObject> listAllOtherDemoObjects() {
+        return container.allInstances(AnotherElasticSearchDemoObject.class);
     }
 
     //endregion
@@ -49,12 +60,23 @@ public class ElasticSearchDemoObjects {
     //region > create (action)
     
     @MemberOrder(sequence = "2")
-    public ElasticSearchDemoObject create(
+    public ElasticSearchDemoObject createDemoObject(
             final @ParameterLayout(named = "Name") String name,
             final @ParameterLayout(named = "Description") String description) {
         final ElasticSearchDemoObject obj = container.newTransientInstance(ElasticSearchDemoObject.class);
         obj.setName(name);
         obj.setDescription(description);
+        container.persistIfNotAlready(obj);
+        return obj;
+    }
+
+    @MemberOrder(sequence = "2")
+    public AnotherElasticSearchDemoObject createAnotherDemoObject(
+            final @ParameterLayout(named = "Name") String name,
+            final @ParameterLayout(named = "Description") String remarks) {
+        final AnotherElasticSearchDemoObject obj = container.newTransientInstance(AnotherElasticSearchDemoObject.class);
+        obj.setName(name);
+        obj.setRemarks(remarks);
         container.persistIfNotAlready(obj);
         return obj;
     }

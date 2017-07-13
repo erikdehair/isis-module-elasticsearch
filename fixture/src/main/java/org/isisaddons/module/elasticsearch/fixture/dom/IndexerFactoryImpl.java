@@ -15,6 +15,8 @@ public class IndexerFactoryImpl implements IndexerFactory {
     public Indexer createIndexer(Indexable indexable) throws Exception {
         if (ElasticSearchDemoObject.class.isAssignableFrom(indexable.getClass())) {
             return new ElasticSearchDemoObjectIndexer(indexable);
+        } else if (AnotherElasticSearchDemoObject.class.isAssignableFrom(indexable.getClass())) {
+            return new AnotherElasticSearchDemoObjectIndexer(indexable);
         } else {
             throw new Exception("Non-indexable class found: " + indexable.getClass().getName());
         }

@@ -13,7 +13,7 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.isisaddons.module.elasticsearch.search.ElasticSearchService;
+import org.isisaddons.module.elasticsearch.ElasticSearchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

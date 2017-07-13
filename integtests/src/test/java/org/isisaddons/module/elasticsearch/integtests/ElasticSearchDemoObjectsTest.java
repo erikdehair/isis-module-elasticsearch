@@ -18,8 +18,10 @@ package org.isisaddons.module.elasticsearch.integtests;
 
 import org.apache.isis.applib.fixturescripts.FixtureScripts;
 import org.assertj.core.api.Assertions;
+import org.isisaddons.module.elasticsearch.fixture.dom.AnotherElasticSearchDemoObject;
 import org.isisaddons.module.elasticsearch.fixture.dom.ElasticSearchDemoObject;
 import org.isisaddons.module.elasticsearch.fixture.dom.ElasticSearchDemoObjects;
+import org.isisaddons.module.elasticsearch.fixture.scripts.scenarios.AnotherElasticSearchDemoObjectsFixture;
 import org.isisaddons.module.elasticsearch.fixture.scripts.scenarios.ElasticSearchDemoObjectsFixture;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,13 +41,14 @@ public class ElasticSearchDemoObjectsTest extends ElasticSearchModuleIntegTest {
     @Before
     public void setUpData() throws Exception {
         fixtureScripts.runFixtureScript(new ElasticSearchDemoObjectsFixture(), null);
+        fixtureScripts.runFixtureScript(new AnotherElasticSearchDemoObjectsFixture(), null);
     }
 
 
     @Test
     public void listAll() throws Exception {
 
-        final List<ElasticSearchDemoObject> all = wrap(elasticSearchDemoObjects).listAll();
+        final List<ElasticSearchDemoObject> all = wrap(elasticSearchDemoObjects).listAllDemoObjects();
         Assertions.assertThat(all.size()).isEqualTo(3);
         
         ElasticSearchDemoObject elasticSearchDemoObject = wrap(all.get(0));
@@ -55,9 +58,28 @@ public class ElasticSearchDemoObjectsTest extends ElasticSearchModuleIntegTest {
     @Test
     public void create() throws Exception {
 
-        wrap(elasticSearchDemoObjects).create("Faz","FazDescription");
+        wrap(elasticSearchDemoObjects).createDemoObject("Faz","FazDescription");
         
-        final List<ElasticSearchDemoObject> all = wrap(elasticSearchDemoObjects).listAll();
+        final List<ElasticSearchDemoObject> all = wrap(elasticSearchDemoObjects).listAllDemoObjects();
+        Assertions.assertThat(all.size()).isEqualTo(4);
+    }
+
+    @Test
+    public void listAllOther() throws Exception {
+
+        final List<AnotherElasticSearchDemoObject> all = wrap(elasticSearchDemoObjects).listAllOtherDemoObjects();
+        Assertions.assertThat(all.size()).isEqualTo(3);
+
+        AnotherElasticSearchDemoObject elasticSearchDemoObject = wrap(all.get(0));
+        Assertions.assertThat(elasticSearchDemoObject.getName()).isEqualTo("Foo");
+    }
+
+    @Test
+    public void createOther() throws Exception {
+
+        wrap(elasticSearchDemoObjects).createAnotherDemoObject("Faz","FazDescription");
+
+        final List<AnotherElasticSearchDemoObject> all = wrap(elasticSearchDemoObjects).listAllOtherDemoObjects();
         Assertions.assertThat(all.size()).isEqualTo(4);
     }
 

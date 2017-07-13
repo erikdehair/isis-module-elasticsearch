@@ -31,19 +31,19 @@ import org.isisaddons.module.elasticsearch.indexing.Indexable;
 import javax.inject.Inject;
 import javax.jdo.annotations.*;
 
-@javax.jdo.annotations.PersistenceCapable(
+@PersistenceCapable(
         identityType=IdentityType.APPLICATION,
         schema="elasticsearch")
-@javax.jdo.annotations.Version(
-        strategy=VersionStrategy.VERSION_NUMBER, 
+@Version(
+        strategy=VersionStrategy.VERSION_NUMBER,
         column="version")
 @DomainObject(
-        objectType = "ELASTICSEARCH_DEMO_OBJECT"
+        objectType = "ANOTHER_ELASTICSEARCH_DEMO_OBJECT"
 )
 @DomainObjectLayout(
         bookmarking = BookmarkPolicy.AS_ROOT
 )
-public class ElasticSearchDemoObject implements Comparable<ElasticSearchDemoObject>, Indexable {
+public class AnotherElasticSearchDemoObject implements Comparable<AnotherElasticSearchDemoObject>, Indexable {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -51,15 +51,15 @@ public class ElasticSearchDemoObject implements Comparable<ElasticSearchDemoObje
     private int id;
 
     //region > name (property)
-    @javax.jdo.annotations.Column(allowsNull="false")
+    @Column(allowsNull="false")
     @Title(sequence="1")
     @Getter @Setter
     private String name;
     //endregion
 
-    @javax.jdo.annotations.Column(allowsNull="true")
+    @Column(allowsNull="true")
     @Getter @Setter
-    private String description;
+    private String remarks;
 
     @Override
     public String getIndexId() {
@@ -74,7 +74,7 @@ public class ElasticSearchDemoObject implements Comparable<ElasticSearchDemoObje
 
     @Override
     public String getSearchResultSummary() {
-        return "This is the summary of "+ toString() +" with description "+ getDescription() +" and id "+ getId();
+        return "This is the summary of "+ toString() +" with remarks "+ getRemarks() +" and id "+ getId();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class ElasticSearchDemoObject implements Comparable<ElasticSearchDemoObje
     //region > compareTo
 
     @Override
-    public int compareTo(ElasticSearchDemoObject other) {
+    public int compareTo(AnotherElasticSearchDemoObject other) {
         return ComparisonChain.start()
                 .compare(getId(), other.getId())
                 .compare(getName(), other.getName())
@@ -101,7 +101,7 @@ public class ElasticSearchDemoObject implements Comparable<ElasticSearchDemoObje
 
     //region > injected services
 
-    @javax.inject.Inject
+    @Inject
     @SuppressWarnings("unused")
     private DomainObjectContainer container;
 

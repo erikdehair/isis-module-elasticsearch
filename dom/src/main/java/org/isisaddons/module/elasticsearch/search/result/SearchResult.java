@@ -7,19 +7,17 @@ import lombok.Setter;
 import org.apache.isis.applib.annotation.*;
 import org.apache.isis.applib.services.bookmark.Bookmark;
 import org.apache.isis.applib.services.bookmark.BookmarkService2;
-import org.isisaddons.module.elasticsearch.indexing.IndexService;
 import org.isisaddons.module.elasticsearch.indexing.Indexable;
 
 import javax.inject.Inject;
 
 @ViewModel
-public class SearchResult implements Comparable<SearchResult> {
+public class SearchResult implements Comparable<SearchResult>, org.apache.isis.applib.ViewModel.Cloneable {
     public SearchResult() {
     }
 
-    public SearchResult(String bookmarkId, String resultClassName, float score, String source) {
-        this.bookmarkId = bookmarkId;
-        this.resultClassName = resultClassName;
+    public SearchResult(Bookmark bookmark, float score, String source) {
+        this.bookmark = bookmark;
         this.score = score;
         this.source = source;
     }
@@ -27,12 +25,7 @@ public class SearchResult implements Comparable<SearchResult> {
     @Property(hidden = Where.EVERYWHERE)
     @Getter
     @Setter
-    private String bookmarkId;
-
-    @Property(hidden = Where.EVERYWHERE)
-    @Getter
-    @Setter
-    private String resultClassName;
+    private Bookmark bookmark;
 
     @PropertyLayout(hidden = Where.EVERYWHERE)
     @Getter
@@ -55,30 +48,51 @@ public class SearchResult implements Comparable<SearchResult> {
     @Setter
     private float score;
 
-    @Programmatic
-    public Bookmark getBookmark() throws ClassNotFoundException {
-        return bookmarkServiceDefault.bookmarkFor(Class.forName(getResultClassName()), getBookmarkId());
-    }
+    private Indexable result;
 
     public Indexable getResult() {
         try {
-            return (Indexable) bookmarkServiceDefault.lookup(getBookmark(), BookmarkService2.FieldResetPolicy.DONT_RESET);
+            if(this.result == null){
+                this.result = (Indexable) bookmarkServiceDefault.lookup(getBookmark(), BookmarkService2.FieldResetPolicy.DONT_RESET);
+            }
         } catch (Exception e) {
+            e.printStackTrace();
         }
-        return null;
+        return this.result;
     }
 
     @Override
     public int compareTo(SearchResult o) {
         return ComparisonChain.start()
                 .compare(getScore(), o.getScore(), Ordering.natural().reverse())
-                .compare(getBookmarkId(), o.getBookmarkId())
+                .compare(getBookmark().getObjectType(), o.getBookmark().getObjectType())
+                .compare(getBookmark().getIdentifier(), o.getBookmark().getIdentifier())
                 .result();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SearchResult)) return false;
+
+        SearchResult that = (SearchResult) o;
+
+        return getBookmark().equals(that.getBookmark());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getBookmark().hashCode();
+        return result;
     }
 
     @Inject
     private BookmarkService2 bookmarkServiceDefault;
 
-    @Inject
-    private IndexService indexService;
+    @Override
+    public Object clone() {
+        SearchResult clone = new SearchResult(getBookmark(), getScore(), getSource());
+        clone.result = getResult();
+        return clone;
+    }
 }

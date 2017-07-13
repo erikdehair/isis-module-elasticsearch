@@ -3,11 +3,13 @@ package org.isisaddons.module.elasticsearch.search.result;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.isis.applib.annotation.*;
+import org.isisaddons.module.elasticsearch.indexing.Indexable;
 import org.isisaddons.module.elasticsearch.search.SearchService;
-import org.isisaddons.module.elasticsearch.search.Type;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.SortedSet;
+import java.util.stream.Collectors;
 
 @ViewModel
 @ViewModelLayout(cssClassFa = "fa fa-search")
@@ -15,9 +17,9 @@ public class SearchResultsPage {
     public SearchResultsPage() {
     }
 
-    public SearchResultsPage(String query, Type preferredType) {
+    public SearchResultsPage(String query, String preferredType) {
         this.query = query;
-        this.preferredType = (preferredType != null ? preferredType.name() : null);
+        this.preferredType = preferredType;
     }
 
     public String title() {
@@ -27,13 +29,8 @@ public class SearchResultsPage {
     @Getter @Setter
     private String query;
 
-    @Property(hidden = Where.EVERYWHERE)
     @Getter @Setter
     private String preferredType;
-
-    public String getPreferredTypeName() {
-        return (getPreferredType() != null ? Type.valueOf(getPreferredType()).getTypeName() : null);
-    }
 
     public Integer getNumberOfResults() {
         return findResults().size();
@@ -41,17 +38,38 @@ public class SearchResultsPage {
 
     private SortedSet<SearchResult> results;
 
+    @Collection()
+    @CollectionLayout(defaultView = "table")
+    public SortedSet<SearchResult> getResults(){
+        return findResults();
+    }
+
     private SortedSet<SearchResult> findResults() {
-        if (this.results == null) {
-            this.results = searchService.executeFind(getQuery(),
-                    (getPreferredType() != null ? Type.valueOf(getPreferredType()) : null));
+        if (this.results == null || this.results.isEmpty()) {
+            Class<Indexable> preferredType = searchService.getPreferredTypes().entrySet().stream()
+                    .filter(t -> t.getKey().getSimpleName().equals(getPreferredType()))
+                    .findFirst()
+                    .map(t -> (Class<Indexable>)t.getKey())
+                    .orElse(null);
+            this.results = searchService.executeFind(getQuery(), preferredType);
         }
         return this.results;
     }
 
-    @CollectionLayout(paged = 50, defaultView = "table")
-    public SortedSet<SearchResult> getResults() {
-        return findResults();
+    public SearchResultsPage searchAgain(@ParameterLayout(named = "Query") String query,
+                                         @Parameter(optionality = Optionality.OPTIONAL) @ParameterLayout(named = "Preferred type") final String preferredType){
+        return searchService.find(query, preferredType);
+    }
+    public String default0SearchAgain(){
+        return getQuery();
+    }
+    public String default1SearchAgain(){
+        return getPreferredType();
+    }
+    public List<String> choices1SearchAgain(){
+        return searchService.getPreferredTypes().entrySet().stream()
+                .map(t -> t.getKey().getSimpleName())
+                .collect(Collectors.toList());
     }
 
     @Inject
