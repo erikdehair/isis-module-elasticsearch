@@ -53,7 +53,7 @@ Copyright 2014~2015 Dan Haywood
         <compileSource>1.8</compileSource>
         <compileTarget>1.8</compileTarget>
 
-        <isis.version>1.14.0</isis.version>
+        <isis.version>1.15.1</isis.version>
         <assertj-core.version>2.0.0</assertj-core.version>
 	    <lombok.version>1.16.16</lombok.version>
         <elasticsearch.version>5.4.1</elasticsearch.version>
@@ -405,6 +405,7 @@ Copyright 2014~2015 Dan Haywood
                 </dependency>
             </dependencies>
         </profile>
+        <!--
         <profile>
             <id>cloudbees-snapshots</id>
             <activation>
@@ -425,6 +426,7 @@ Copyright 2014~2015 Dan Haywood
                 </repository>
             </repositories>
         </profile>
+        -->
         <!-- http://central.sonatype.org/pages/apache-maven.html -->
         <profile>
             <id>release</id>

@@ -4,7 +4,7 @@ import org.apache.isis.applib.annotation.DomainService;
 import org.apache.isis.applib.annotation.NatureOfService;
 import org.isisaddons.module.elasticsearch.indexing.Indexable;
 import org.isisaddons.module.elasticsearch.indexing.Indexer;
-import org.isisaddons.module.elasticsearch.indexing.IndexerFactory;
+import org.isisaddons.module.elasticsearch.indexing.spi.IndexerFactory;
 
 /**
  * Created by E. de Hair <e.dehair@pocos.nl> on 6/22/17.

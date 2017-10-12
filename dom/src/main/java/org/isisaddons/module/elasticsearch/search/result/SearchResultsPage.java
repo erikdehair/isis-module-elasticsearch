@@ -6,12 +6,22 @@ import org.apache.isis.applib.annotation.*;
 import org.isisaddons.module.elasticsearch.indexing.Indexable;
 import org.isisaddons.module.elasticsearch.search.SearchService;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.xml.bind.annotation.*;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
 
-@ViewModel
+@XmlRootElement(name = "searchResultsPage")
+@XmlType(
+        propOrder = {
+                "query",
+                "preferredType",
+                "results"
+        }
+)
+@XmlAccessorType(XmlAccessType.FIELD)
 @ViewModelLayout(cssClassFa = "fa fa-search")
 public class SearchResultsPage {
     public SearchResultsPage() {
@@ -26,18 +36,22 @@ public class SearchResultsPage {
         return "Search results";
     }
 
+    @XmlElement(required = true)
     @Getter @Setter
     private String query;
 
+    @XmlElement(required = false)
     @Getter @Setter
     private String preferredType;
 
+    @XmlTransient
     public Integer getNumberOfResults() {
         return findResults().size();
     }
 
     private SortedSet<SearchResult> results;
 
+    @XmlTransient
     @Collection()
     @CollectionLayout(defaultView = "table")
     public SortedSet<SearchResult> getResults(){
@@ -57,7 +71,7 @@ public class SearchResultsPage {
     }
 
     public SearchResultsPage searchAgain(@ParameterLayout(named = "Query") String query,
-                                         @Parameter(optionality = Optionality.OPTIONAL) @ParameterLayout(named = "Preferred type") final String preferredType){
+                                         @Nullable @ParameterLayout(named = "Preferred type") final String preferredType){
         return searchService.find(query, preferredType);
     }
     public String default0SearchAgain(){
@@ -72,6 +86,7 @@ public class SearchResultsPage {
                 .collect(Collectors.toList());
     }
 
+    @XmlTransient
     @Inject
     private SearchService searchService;
 }

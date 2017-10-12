@@ -8,7 +8,7 @@ import org.apache.isis.applib.annotation.Programmatic;
 import org.isisaddons.module.elasticsearch.util.JsonSerializers;
 import org.joda.time.LocalDate;
 
-public abstract class AbstractIndex<T extends Indexable> {
+public abstract class IndexAbstract<T extends Indexable> {
     /**
      * A tenancy can be used to only retreive items the user has access to.
      */

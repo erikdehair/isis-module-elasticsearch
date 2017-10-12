@@ -39,9 +39,9 @@ public class ElasticSearchService {
     public static Client createElasticSearchClient() throws UnknownHostException {
         IsisConfiguration isisConfiguration = IsisContext.getSessionFactory().getConfiguration();
 
-        String clusterName = isisConfiguration.getString("cluster.name", "elasticsearch");
-        String clusterTransportAddress = isisConfiguration.getString("cluster.transport.address", "localhost");
-        int clusterPort = isisConfiguration.getInteger("cluster.port", 9300);
+        String clusterName = isisConfiguration.getString("isis.services.elasticsearch.cluster.name", "elasticsearch");
+        String clusterTransportAddress = isisConfiguration.getString("isis.services.elasticsearch.cluster.transport.address", "localhost");
+        int clusterPort = isisConfiguration.getInteger("isis.services.elasticsearch.cluster.port", 9300);
 
         Settings settings = Settings.builder()
                 .put("cluster.name", clusterName)
@@ -51,9 +51,9 @@ public class ElasticSearchService {
     }
 
     public static String getIndexName(){
-        return IsisContext.getSessionFactory().getConfiguration().getString("index.name", "defaultindex");
+        return IsisContext.getSessionFactory().getConfiguration().getString("isis.services.elasticsearch.index.name", "defaultindex");
     }
 
     @Getter
-    private static Client client;
+    private Client client;
 }

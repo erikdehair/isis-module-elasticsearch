@@ -62,12 +62,6 @@ public class AnotherElasticSearchDemoObject implements Comparable<AnotherElastic
     private String remarks;
 
     @Override
-    public String getIndexId() {
-        Bookmark bookmark = bookmarkService2.bookmarkFor(this);
-        return bookmark.getObjectType() +":"+ bookmark.getIdentifier();
-    }
-
-    @Override
     public String getTenancy() {
         return "foo";
     }
@@ -98,15 +92,4 @@ public class AnotherElasticSearchDemoObject implements Comparable<AnotherElastic
     public String toString(){
         return getClass().getName() +"[name="+getName()+"]";
     }
-
-    //region > injected services
-
-    @Inject
-    @SuppressWarnings("unused")
-    private DomainObjectContainer container;
-
-    @Inject
-    private BookmarkService2 bookmarkService2;
-    //endregion
-
 }

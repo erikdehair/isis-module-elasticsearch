@@ -8,7 +8,9 @@ public interface Indexable {
      * @return
      */
     @Programmatic
-    String getIndexId();
+    default String getIndexId(){
+        return null;
+    }
 
     @Programmatic
     String getTenancy();

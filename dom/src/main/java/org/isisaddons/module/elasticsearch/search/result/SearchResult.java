@@ -10,8 +10,17 @@ import org.apache.isis.applib.services.bookmark.BookmarkService2;
 import org.isisaddons.module.elasticsearch.indexing.Indexable;
 
 import javax.inject.Inject;
+import javax.xml.bind.annotation.*;
 
-@ViewModel
+@XmlRootElement(name = "searchResult")
+@XmlType(
+        propOrder = {
+                "bookmark",
+                "score",
+                "source"
+        }
+)
+@XmlAccessorType(XmlAccessType.FIELD)
 public class SearchResult implements Comparable<SearchResult>, org.apache.isis.applib.ViewModel.Cloneable {
     public SearchResult() {
     }
@@ -22,34 +31,37 @@ public class SearchResult implements Comparable<SearchResult>, org.apache.isis.a
         this.source = source;
     }
 
+    @XmlElement(required = true)
     @Property(hidden = Where.EVERYWHERE)
     @Getter
     @Setter
     private Bookmark bookmark;
 
+    @XmlElement(required = true)
     @PropertyLayout(hidden = Where.EVERYWHERE)
     @Getter
     @Setter
     private String source;
+
+    @XmlTransient
     @MemberOrder(sequence = "20")
     @PropertyLayout(named = "Match")
     public String getMatch() {
         Indexable result = getResult();
-        if (result != null) {
-            return result.getSearchResultSummary();
-        } else {
-            return "Invalid search result. Probably removed from search index.";
-        }
+        return result != null ? result.getSearchResultSummary() : "Invalid search result. Probably removed from search index.";
     }
 
+    @XmlElement(required = true)
     @MemberOrder(sequence = "30")
     @PropertyLayout(named = "Score")
     @Getter
     @Setter
     private float score;
 
+    @XmlTransient
     private Indexable result;
 
+    @XmlTransient
     public Indexable getResult() {
         try {
             if(this.result == null){
@@ -86,13 +98,14 @@ public class SearchResult implements Comparable<SearchResult>, org.apache.isis.a
         return result;
     }
 
-    @Inject
-    private BookmarkService2 bookmarkServiceDefault;
-
     @Override
     public Object clone() {
         SearchResult clone = new SearchResult(getBookmark(), getScore(), getSource());
         clone.result = getResult();
         return clone;
     }
+
+    @XmlTransient
+    @Inject
+    private BookmarkService2 bookmarkServiceDefault;
 }

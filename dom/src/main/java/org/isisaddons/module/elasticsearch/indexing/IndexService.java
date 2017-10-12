@@ -2,6 +2,8 @@ package org.isisaddons.module.elasticsearch.indexing;
 
 import org.apache.isis.applib.annotation.DomainService;
 import org.apache.isis.applib.annotation.NatureOfService;
+import org.apache.isis.applib.annotation.Programmatic;
+import org.apache.isis.applib.services.bookmark.Bookmark;
 import org.apache.isis.applib.services.bookmark.BookmarkService2;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -14,6 +16,7 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.isisaddons.module.elasticsearch.ElasticSearchService;
+import org.isisaddons.module.elasticsearch.indexing.spi.IndexerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,14 +31,15 @@ public class IndexService extends ElasticSearchService {
 
     private static final Logger log = LoggerFactory.getLogger(IndexService.class);
 
+    @Programmatic
     public void deleteDocument(Indexable deletedObject) {
         try {
-            AbstractIndex index = indexerFactory.createIndexer(deletedObject).createUpdatedIndex();
+            IndexAbstract index = indexerFactory.createIndexer(deletedObject).createUpdatedIndex();
             DeleteRequest deleteRequest = new DeleteRequest(ElasticSearchService.getIndexName(), index.getType().getName(),
-                    deletedObject.getIndexId());
+                    createIndexId(deletedObject));
             getClient().delete(deleteRequest).get();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -45,19 +49,19 @@ public class IndexService extends ElasticSearchService {
                 insertOrUpdate(updatedObject, indexerFactory.createIndexer(updatedObject).createUpdatedIndex());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
-    private void insertOrUpdate(Indexable updatedObject, AbstractIndex index) throws InterruptedException, ExecutionException {
+    private void insertOrUpdate(Indexable updatedObject, IndexAbstract index) throws InterruptedException, ExecutionException {
         String json = index.createJson();
 
         IndexRequest indexRequest = new IndexRequest(ElasticSearchService.getIndexName(), index.getType().getName(),
-                updatedObject.getIndexId())
+                createIndexId(updatedObject))
                 .source(json, XContentType.JSON);
 
         UpdateRequest updateRequest = new UpdateRequest(ElasticSearchService.getIndexName(), index.getType().getName(),
-                updatedObject.getIndexId())
+                createIndexId(updatedObject))
                 .doc(json, XContentType.JSON)
                 .upsert(indexRequest);
 
@@ -120,17 +124,17 @@ public class IndexService extends ElasticSearchService {
             DeleteIndexRequest deleteRequest = new DeleteIndexRequest(ElasticSearchService.getIndexName());
             getClient().admin().indices().delete(deleteRequest).get();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         try {
             final CreateIndexRequestBuilder createIndexRequestBuilder = getClient().admin().indices().prepareCreate(ElasticSearchService.getIndexName());
             createIndexRequestBuilder.setSettings(createSettings()).execute().actionGet();
 
-            // tmp disable mappings
+            // tmp disable mappings: mappings are something application specific
             // addMappings();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -140,13 +144,8 @@ public class IndexService extends ElasticSearchService {
 
             BulkRequestBuilder bulkRequest = getClient().prepareBulk();
 
-            /*
-            contactService.listAllActive().forEach((indexable) -> addToBulkRequest(bulkRequest, indexable));
-            companyService.listAllActive().forEach((indexable) -> addToBulkRequest(bulkRequest, indexable));
-            subscriptionFilterService.listAllSubscriptionsIgnoringAncient().forEach((indexable) -> addToBulkRequest(bulkRequest, indexable));
-            inportService.listAll().forEach((indexable) -> addToBulkRequest(bulkRequest, indexable));
-            orderService.listAll().forEach((indexable) -> addToBulkRequest(bulkRequest, indexable));
-            phoneNumberService.listAll().forEach((indexable) -> addToBulkRequest(bulkRequest, indexable));
+            /* example of how to add items to a bulk request
+            fooService.listAll().forEach((indexable) -> addToBulkRequest(bulkRequest, indexable));
             */
 
             BulkResponse bulkResponse = bulkRequest.execute().actionGet();
@@ -154,19 +153,27 @@ public class IndexService extends ElasticSearchService {
                 log.error("An error occurred while initialising search engine.\n\n" + bulkResponse.buildFailureMessage());
             }
         } catch (Exception e) {
-            e.printStackTrace();
-
+            throw new RuntimeException(e);
         }
     }
 
     private void addToBulkRequest(BulkRequestBuilder bulkRequest, Indexable indexable) {
         try {
-            AbstractIndex index = indexerFactory.createIndexer(indexable).createUpdatedIndex();
-            bulkRequest.add(getClient().prepareIndex(ElasticSearchService.getIndexName(), index.getType().getName(), indexable.getIndexId())
+            IndexAbstract index = indexerFactory.createIndexer(indexable).createUpdatedIndex();
+            bulkRequest.add(getClient().prepareIndex(ElasticSearchService.getIndexName(), index.getType().getName(), createIndexId(indexable))
                     .setSource(index.createJson(), XContentType.JSON));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+    }
+
+    private String createIndexId(Indexable indexable){
+        String indexId = indexable.getIndexId();
+        if(indexId == null){
+            Bookmark bookmark = bookmarkServiceDefault.bookmarkFor(indexable);
+            indexId = bookmark.toString();
+        }
+        return indexId;
     }
 
     @Inject

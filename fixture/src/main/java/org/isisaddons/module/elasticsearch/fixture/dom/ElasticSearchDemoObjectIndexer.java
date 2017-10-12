@@ -1,6 +1,6 @@
 package org.isisaddons.module.elasticsearch.fixture.dom;
 
-import org.isisaddons.module.elasticsearch.indexing.AbstractIndex;
+import org.isisaddons.module.elasticsearch.indexing.IndexAbstract;
 import org.isisaddons.module.elasticsearch.indexing.Indexable;
 import org.isisaddons.module.elasticsearch.indexing.Indexer;
 
@@ -14,7 +14,7 @@ public class ElasticSearchDemoObjectIndexer extends Indexer {
     }
 
     @Override
-    public AbstractIndex createUpdatedIndex() {
+    public IndexAbstract createUpdatedIndex() {
         ElasticSearchDemoObject p = (ElasticSearchDemoObject) indexable;
         ElasticSearchDemoObjectIndex index = new ElasticSearchDemoObjectIndex();
         index.setTenancy(p.getTenancy());
